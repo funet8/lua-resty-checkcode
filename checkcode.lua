@@ -1,9 +1,7 @@
-
 local checkcode = require("cmcheckcode")
 local method = ngx.req.get_method()
 local uri = ngx.var.uri
 local cache_code = ngx.shared.checkcode
-
 
 function get_from_cache(key)
 	local value = cache_code:get(key)
@@ -46,7 +44,7 @@ else
 			ngx.say(res.body)
 			ngx.exit(ngx.HTTP_OK)
 		end
-		ngx.say('{"errno": -2,"errmsg": "验证码hash已经失效","data": ""}')
+		ngx.say('{"errno": -2,"errmsg": "code hash is invalid","data": ""}')
 		ngx.exit(ngx.HTTP_OK)
 	else
 		local check = string.sub(ngx.var.hashkey, 2)

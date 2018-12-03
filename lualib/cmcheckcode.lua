@@ -7,12 +7,12 @@ local math = math
 --------------------------------------------------------------
 --运行配置项
 --------------------------------------------------------------
---字体：-1-使用gd.FONT_GIANT字体;1-使用随机字体;其他-使用“fonts”中第一个字体
---字体预先在变量“fonts”中定义；如果fonts没有值，将搜索系统中的所有字体，字体路径在“FONT_PATH”中预定义
+--字体：-1-使用gd.FONT_GIANT字体;1-使用随机字体;其他-使用"fonts"中第一个字体
+--字体预先在变量"fonts"中定义；如果fonts没有值，将搜索系统中的所有字体，字体路径在"FONT_PATH"中预定义
 local FONT = 1
 
 --每个字符字体随机：1-是，其他-否
---仅当“FONT”值为“1”时，本变量起作用
+--仅当"FONT"值为"1"时，本变量起作用
 local FONT_RANDOM_CHAR = 0
 
 --每个字符字体大小是否随机：1-是，其他-否
@@ -23,20 +23,20 @@ local FONT_SIZE_RANDOM = 1
 local XLINE_FALG = 1
 
 --干扰线条的最多条数
---仅当“XLINE_FALG”的值为“是”是，本变量起作用
+--仅当"XLINE_FALG"的值为"是"是，本变量起作用
 local XLINE_LIMIT = 6
 
 --验证码类型：TEXT-字符串；EXPRESSION-表达式
 local MARK_TYPE = "TEXT"
 --MARK_TYPE="EXPRESSION"
 
---字符个数：仅当“MARK_TYPE”=“TEXT”时，本变量起作用
+--字符个数：仅当"MARK_TYPE"="TEXT"时，本变量起作用
 local TEXT_NUM = 4
 
 --字符随机字符串长度
 local TEXT_LENS_NUM = 21
 
---表达式项数限制（最多不超过EXPRESSION_ITEMS项）：仅当“MARK_TYPE”=“EXPRESSION”时，本变量起作用
+--表达式项数限制（最多不超过EXPRESSION_ITEMS项）：仅当"MARK_TYPE"="EXPRESSION"时，本变量起作用
 local EXPRESSION_ITEMS = 3
 
 --生成验证码个数
@@ -47,11 +47,11 @@ local MARK_NUM = 1
 --预定义变量
 --------------------------------------------------------------
 --词典
-local all = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','0',"1","2","3","4","5","6","7","8","9"}
+local all = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','8','9','0',"2","3","4","5","6","7","8","9"}
 
-local dict = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','0'}
-local numbers = {"1","2","3","4","5","6","7","8","9"}--表达式可使用数字，排除0
-local operators = {"+","-","*"}--表达式可使用运算符，不支持“/”
+local dict = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','8','9','0'}
+local numbers = {"2","3","4","5","6","7","8","9"}--表达式可使用数字，排除0,1
+local operators = {"+","-","*"}--表达式可使用运算符，不支持"/"
 
 --随机种子，防止通过获取系统时间得到随机数种子，直接计算出验证码
 math.randomseed(os.time())
@@ -88,6 +88,13 @@ local function init()
 	gd.useFontConfig(true)
     im2:filledRectangle(0,0,IMG_WIDTH,IMG_HEIGHT,bg)
     stringmark = ""
+end
+
+--判断目录
+local function file_exists(path)
+    local file = io.open(path, "rb")
+    if file then file:close() end
+    return file ~= nil
 end
 
 --查找字体
@@ -130,7 +137,7 @@ local function makeExpression()
             str = operators[math.random(3)]
         end
         strings[i] = str
-    end 
+    end
     return strings
 end
 
@@ -172,21 +179,21 @@ function _M:doIt()
 				if FONT_SIZE_RANDOM == 1 then fontsize=font_size[math.random(7)] end
 				im2:stringFT(fg, font, fontsize, math.random()/math.pi, 5+(nIndex-1)*15, 25, string.sub(stringmark,nIndex,nIndex))
 				--im2:stringFT(fg,font,18,math.random()/math.pi,5+(nIndex-1)*15, 25, "A")
-			end        
+			end
 		end
 	elseif MARK_TYPE == "EXPRESSION" then --表达式验证码
 		local strings = makeExpression()
 		local raise = 0
-		local ncharacter = 0 
+		local ncharacter = 0
 		for j = 1 , table.getn(strings) do
 			if j%2 == 0 then raise = 3 end
 			stringmark = stringmark..strings[j]
 			if FONT == 1 then font = fonts[math.random(numfonts)] end
-			if FONT_SIZE_RANDOM == 1 then fontsize = font_size[math.random(5)] end          
+			if FONT_SIZE_RANDOM == 1 then fontsize = font_size[math.random(5)] end
 			im2:stringFT(fg, FONT_PATH .. font, fontsize, math.random()/math.pi, 5+ncharacter*12+raise, 25, strings[j])
 			ncharacter = ncharacter + string.len(strings[j])
 		end
-		--            print(stringmark) 
+		--            print(stringmark)
 		--            value=tonumber(stringmark)
 		--            print(value)
 	end
@@ -199,6 +206,9 @@ function _M:doIt()
 		end
 	end
 
+        if not file_exists("/dev/shm/checkcode/") then
+                os.execute("mkdir /dev/shm/checkcode/")
+        end
 	im2:png("/dev/shm/checkcode/" .. stringmark, 10)
 	return stringmark
 	--end
