@@ -4,14 +4,14 @@
 建议使用openresty
 gd.so依赖
 ```
-yum -y install libjpeg-devel libpng-devel freetype-devel fontconfig-devel libXpm-devel libpng12
+yum -y install libjpeg-devel libpng-devel freetype-devel fontconfig-devel libXpm-devel libpng12 stix-fonts
 ```
 依赖md5, string lua模块
 将lualib里面文件放入/usr/local/openresty/lualib
 checkcode.lua里面文件放入/usr/local/openresty/nginx/conf
 http {}中加入:
 ```
-lua_shared_dict checkcode 2m;
+lua_shared_dict checkcode 1m;
 limit_req_zone $binary_remote_addr zone=req_check:1m rate=5r/s;
 ```
 server {}中加入:
@@ -23,7 +23,6 @@ location /codeimg/ {
 location ~ /restapi/v1/captchas(.*)$ {
     default_type 'text/html';
     limit_req zone=req_check burst=5;
-    #limit_req zone=req_check burst=5 nodelay;
     set $hashkey $1;
     content_by_lua_file /usr/local/openresty/nginx/conf/checkcode.lua;
 }

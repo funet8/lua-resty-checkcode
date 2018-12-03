@@ -54,9 +54,9 @@ else
     	    if arg.key and arg.code then
     	        local value =get_from_cache(arg.key)
     	        set_to_cache(arg.key, nil, 1) -- remain 1s
-    	        --ngx.say(arg.key)
-    	        --ngx.say(arg.code)
-    	        --ngx.say(value)
+    	        -- ngx.say(arg.key)
+    	        -- ngx.say(arg.code)
+    	        -- ngx.say(value)
     	        if value and string.lower(value) == string.lower(arg.code) then
     	            ngx.say('{"errno": 0,"errmsg": "success" }')
     	            ngx.exit(ngx.HTTP_OK)
