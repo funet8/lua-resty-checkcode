@@ -119,7 +119,7 @@ local function makeText(dict, lens)
     for i = 1, lens do
         _stringmark = _stringmark .. dict[math.random(num)]
     end
-	return _stringmark
+    return _stringmark
 end
 
 --生成表达式字符串
@@ -143,13 +143,13 @@ end
 
 --计算md5的key
 function _M:getmd5key()
-	local resty_md5 = require "resty.md5"
-	local str = require "resty.string"
-	local time = ngx.time()
-	local md5 = resty_md5:new()
-	md5:update("" .. time)
-	local md5key = str.to_hex(md5:final())
-	return md5key
+    local resty_md5 = require "resty.md5"
+    local str = require "resty.string"
+    local time = ngx.time()
+    local md5 = resty_md5:new()
+    md5:update("" .. time)
+    local md5key = str.to_hex(md5:final())
+    return md5key
 end
 
 
@@ -163,55 +163,54 @@ function _M:doIt()
     -- end
 
     -- for i = 1, MARK_NUM do
-	init()
-	local font = fonts[0];
-	local fontsize = 20;
+    init()
+    local font = fonts[0];
+    local fontsize = 20;
 
-	if MARK_TYPE == "TEXT" then --普通字符串验证码
-		stringmark = makeText(all, TEXT_NUM)
-		-- stringkey = makeText(all, TEXT_LENS_NUM)
-		if FONT == -1 then
-			im2:string(gd.FONT_GIANT, 18, 10, stringmark, fg)
-		else
-			for nIndex = 1, string.len(stringmark) do
-				local font, fontsize
-				if FONT == 1 then font=fonts[math.random(numfonts)] end
-				if FONT_SIZE_RANDOM == 1 then fontsize=font_size[math.random(7)] end
-				im2:stringFT(fg, font, fontsize, math.random()/math.pi, 5+(nIndex-1)*15, 25, string.sub(stringmark,nIndex,nIndex))
-				--im2:stringFT(fg,font,18,math.random()/math.pi,5+(nIndex-1)*15, 25, "A")
-			end
-		end
-	elseif MARK_TYPE == "EXPRESSION" then --表达式验证码
-		local strings = makeExpression()
-		local raise = 0
-		local ncharacter = 0
-		for j = 1 , table.getn(strings) do
-			if j%2 == 0 then raise = 3 end
-			stringmark = stringmark..strings[j]
-			if FONT == 1 then font = fonts[math.random(numfonts)] end
-			if FONT_SIZE_RANDOM == 1 then fontsize = font_size[math.random(5)] end
-			im2:stringFT(fg, FONT_PATH .. font, fontsize, math.random()/math.pi, 5+ncharacter*12+raise, 25, strings[j])
-			ncharacter = ncharacter + string.len(strings[j])
-		end
-		--            print(stringmark)
-		--            value=tonumber(stringmark)
-		--            print(value)
-	end
-
-	--  随机线条干扰
-	if XLINE_FALG == 1 then
-		local xlineNum = math.random(XLINE_LIMIT)
-		for i = 1, xlineNum do
-			im2:line(math.random(IMG_WIDTH), math.random(IMG_HEIGHT), math.random(IMG_WIDTH), math.random(IMG_HEIGHT), green)
-		end
-	end
-
-        if not file_exists("/dev/shm/checkcode/") then
-                os.execute("mkdir /dev/shm/checkcode/")
+    if MARK_TYPE == "TEXT" then --普通字符串验证码
+    	stringmark = makeText(all, TEXT_NUM)
+    	-- stringkey = makeText(all, TEXT_LENS_NUM)
+    	if FONT == -1 then
+    	    im2:string(gd.FONT_GIANT, 18, 10, stringmark, fg)
+    	else
+    	    for nIndex = 1, string.len(stringmark) do
+    	        local font, fontsize
+    	        if FONT == 1 then font=fonts[math.random(numfonts)] end
+    	        if FONT_SIZE_RANDOM == 1 then fontsize=font_size[math.random(7)] end
+    	        im2:stringFT(fg, font, fontsize, math.random()/math.pi, 5+(nIndex-1)*15, 25, string.sub(stringmark,nIndex,nIndex))
+    	        --im2:stringFT(fg,font,18,math.random()/math.pi,5+(nIndex-1)*15, 25, "A")
+    	    end
+    	end
+    elseif MARK_TYPE == "EXPRESSION" then --表达式验证码
+        local strings = makeExpression()
+        local raise = 0
+        local ncharacter = 0
+        for j = 1 , table.getn(strings) do
+            if j%2 == 0 then raise = 3 end
+            stringmark = stringmark..strings[j]
+            if FONT == 1 then font = fonts[math.random(numfonts)] end
+            if FONT_SIZE_RANDOM == 1 then fontsize = font_size[math.random(5)] end
+            im2:stringFT(fg, FONT_PATH .. font, fontsize, math.random()/math.pi, 5+ncharacter*12+raise, 25, strings[j])
+            ncharacter = ncharacter + string.len(strings[j])
         end
-	im2:png("/dev/shm/checkcode/" .. stringmark, 10)
-	return stringmark
-	--end
+        -- print(stringmark)
+        -- value=tonumber(stringmark)
+        -- print(value)
+    end
+
+    --  随机线条干扰
+    if XLINE_FALG == 1 then
+        local xlineNum = math.random(XLINE_LIMIT)
+        for i = 1, xlineNum do
+            im2:line(math.random(IMG_WIDTH), math.random(IMG_HEIGHT), math.random(IMG_WIDTH), math.random(IMG_HEIGHT), green)
+        end
+    end
+
+    if not file_exists("/dev/shm/checkcode/") then
+        os.execute("mkdir /dev/shm/checkcode/")
+    end
+    im2:png("/dev/shm/checkcode/" .. stringmark, 10)
+    return stringmark
 end
 --start=os.clock()
 --doIt()
